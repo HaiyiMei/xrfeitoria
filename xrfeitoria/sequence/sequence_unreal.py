@@ -370,21 +370,12 @@ class SequenceUnreal(SequenceBase):
         export_vertices: bool = False,
         export_skeleton: bool = False,
     ) -> 'dict_process_dir':
-        # save camera parameters
-        camera_dir = f'{save_dir}/{XRFeitoriaUnrealFactory.constants.cam_param_dir}'
-        XRFeitoriaUnrealFactory.Sequence.save_camera_params(save_dir=camera_dir, per_frame=True)
-
-        # save actor infos
-        actor_infos_dir = f'{save_dir}/{XRFeitoriaUnrealFactory.constants.actor_infos_dir}'
-        XRFeitoriaUnrealFactory.Sequence.save_actor_infos(save_dir=actor_infos_dir, per_frame=True)
-
-        # TODO: export vertices and skeleton
-        return {
-            'camera_dir': camera_dir,
-            'actor_infos_dir': actor_infos_dir,
-            'vertices_dir': '',
-            'skeleton_dir': '',
-        }
+        return XRFeitoriaUnrealFactory.Sequence.save_params(
+            save_dir=save_dir,
+            per_frame=True,
+            export_vertices=export_vertices,
+            export_skeleton=export_skeleton,
+        )
 
     @staticmethod
     def _new_seq_in_engine(

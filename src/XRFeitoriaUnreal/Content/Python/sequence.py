@@ -891,7 +891,7 @@ def get_actor_param(actor: unreal.Actor) -> Dict[str, Any]:
     return {
         'location': actor.get_actor_location().to_tuple(),
         'rotation': actor.get_actor_rotation().to_tuple(),
-        'scale': actor.get_actor_scale().to_tuple(),
+        'scale': actor.get_actor_scale3d().to_tuple(),
         'stencil_value': get_actor_mesh_component(actor).get_editor_property('custom_depth_stencil_value'),
     }
 
@@ -1251,13 +1251,14 @@ class Sequence:
                 mesh_actors[name] = actor
 
         # define save functions
-        def save_camera_param(frame_idx: int) -> Dict[str, Any]:
+        def save_camera_param(frame_idx: int, save_root: PathLike) -> Dict[str, Any]:
             """Save camera parameters of the given frame to
-            {save_dir}/{camera_name}/{frame_idx:04d}.json.
+            {save_root}/camera_params/{camera_name}/{frame_idx:04d}.json.
 
             Args:
                 frame_idx (int): The frame index to save camera parameters for.
             """
+            save_dir = Path(save_root) / UnrealRenderLayerEnum.camera_params.value
             unreal.LevelSequenceEditorBlueprintLibrary.set_current_time(frame_idx)
             for name, camera in camera_actors.items():
                 save_path = save_dir / name / f'{frame_idx:04d}.json'
@@ -1296,23 +1297,30 @@ class Sequence:
                 if export_vertices:
                     vertices_file = vertices_dir / name / f'{frame_idx:04d}.npz'
                     vertices_file.parent.mkdir(parents=True, exist_ok=True)
-                    vertices_data = ...
-                    np.savez_compressed(vertices_file, vertices_data)
+                    # vertices_data = ...
+                    # np.savez_compressed(vertices_file, vertices_data)
 
                 if export_skeleton:
                     skeleton_file = skeleton_dir / name / f'{frame_idx:04d}.npz'
                     skeleton_file.parent.mkdir(parents=True, exist_ok=True)
-                    skeleton_data = ...
-                    np.savez_compressed(skeleton_file, skeleton_data)
+                    # skeleton_data = ...
+                    # np.savez_compressed(skeleton_file, skeleton_data)
 
         # save parameters
         if per_frame:
             for frame_idx in range(cls.START_FRAME, cls.sequence.get_playback_end()):
-                save_camera_param(frame_idx)
+                save_camera_param(frame_idx, save_root=save_dir)
                 save_actor_param(frame_idx, save_dir, export_vertices, export_skeleton)
         else:
             save_camera_param(cls.START_FRAME)
             save_actor_param(cls.START_FRAME, save_dir, export_vertices, export_skeleton)
+
+        return {
+            'camera_dir': (save_dir / UnrealRenderLayerEnum.camera_params.value).as_posix(),
+            'actor_infos_dir': (save_dir / UnrealRenderLayerEnum.actor_infos.value).as_posix(),
+            'vertices_dir': (save_dir / UnrealRenderLayerEnum.vertices.value).as_posix(),
+            'skeleton_dir': (save_dir / UnrealRenderLayerEnum.skeleton.value).as_posix(),
+        }
 
 
 def test():
