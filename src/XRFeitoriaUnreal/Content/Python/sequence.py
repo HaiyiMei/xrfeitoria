@@ -1297,13 +1297,27 @@ class Sequence:
                 if export_vertices:
                     vertices_file = vertices_dir / name / f'{frame_idx:04d}.npz'
                     vertices_file.parent.mkdir(parents=True, exist_ok=True)
-                    # vertices_data = ...
-                    # np.savez_compressed(vertices_file, vertices_data)
+                    if isinstance(actor, unreal.SkeletalMeshActor):
+                        skl_mesh_comp = actor.skeletal_mesh_component
+                        vertices_data = (
+                            unreal.XF_BlueprintFunctionLibrary.get_skeletal_mesh_vertex_locations_by_lod_index(
+                                skl_mesh_comp, 0
+                            )
+                        )
+                    elif isinstance(actor, unreal.StaticMeshActor):
+                        static_mesh_comp = actor.static_mesh_component
+                        vertices_data = unreal.XF_BlueprintFunctionLibrary.get_static_mesh_vertex_locations(
+                            static_mesh_comp, 0
+                        )
+                    vertices_data = np.array([v.to_tuple() for v in vertices_data])
+                    np.savez_compressed(vertices_file, vertices_data)
 
-                if export_skeleton:
+                if export_skeleton and isinstance(actor, unreal.SkeletalMeshActor):
                     skeleton_file = skeleton_dir / name / f'{frame_idx:04d}.npz'
                     skeleton_file.parent.mkdir(parents=True, exist_ok=True)
-                    # skeleton_data = ...
+                    vertices_data = unreal.XF_BlueprintFunctionLibrary.get_skeletal_mesh_bone_locations(skl_mesh_comp)
+                    # bone_locations (Array[Vector]):
+                    # bone_names (Array[Name]):
                     # np.savez_compressed(skeleton_file, skeleton_data)
 
         # save parameters
