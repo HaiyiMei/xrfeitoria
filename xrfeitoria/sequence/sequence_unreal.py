@@ -26,7 +26,15 @@ try:
 except (ImportError, ModuleNotFoundError):
     pass
 
-dict_process_dir = TypedDict('dict_process_dir', {'camera_dir': str, 'vertices_dir': str, 'skeleton_dir': str})
+dict_process_dir = TypedDict(
+    'dict_process_dir',
+    {
+        'camera_dir': str,
+        'actor_infos_dir': str,
+        'vertices_dir': str,
+        'skeleton_dir': str,
+    },
+)
 
 
 @remote_unreal(dec_class=True, suffix='_in_engine')
@@ -67,7 +75,7 @@ class SequenceUnreal(SequenceBase):
             save_dir=save_dir, export_vertices=export_vertices, export_skeleton=export_skeleton
         )
 
-        # convert camera parameters to xrprimer structure
+        # 1. convert camera parameters to xrprimer structure
         for file in Path(_dir_['camera_dir']).glob('*/*.json'):
             data = json.loads(file.read_text())
             cam_param = CameraParameter.from_unreal_convention(
@@ -78,7 +86,9 @@ class SequenceUnreal(SequenceBase):
             )
             cam_param.dump(file.as_posix())  # replace the original file
 
-        print(_dir_['camera_dir'])
+        # 2. convert actor infos from `.dat` to `.json`
+        # 3. convert vertices from `.dat` to `.npz`
+        # 4. convert skeleton from `.dat` to `.json`
 
     @classmethod
     def add_to_renderer(
@@ -360,12 +370,18 @@ class SequenceUnreal(SequenceBase):
         export_vertices: bool = False,
         export_skeleton: bool = False,
     ) -> 'dict_process_dir':
+        # save camera parameters
         camera_dir = f'{save_dir}/{XRFeitoriaUnrealFactory.constants.cam_param_dir}'
         XRFeitoriaUnrealFactory.Sequence.save_camera_params(save_dir=camera_dir, per_frame=True)
+
+        # save actor infos
+        actor_infos_dir = f'{save_dir}/{XRFeitoriaUnrealFactory.constants.actor_infos_dir}'
+        XRFeitoriaUnrealFactory.Sequence.save_actor_infos(save_dir=actor_infos_dir, per_frame=True)
 
         # TODO: export vertices and skeleton
         return {
             'camera_dir': camera_dir,
+            'actor_infos_dir': actor_infos_dir,
             'vertices_dir': '',
             'skeleton_dir': '',
         }

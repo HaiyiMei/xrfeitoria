@@ -45,7 +45,6 @@ DEFAULT_SEQUENCE_PATH = f'{DEFAULT_PATH}/Sequences'
 DEFAULT_ASSET_PATH = f'{DEFAULT_PATH}/Assets'
 DEFAULT_SEQUENCE_DATA_ASSET = f'/{PLUGIN_NAME}/DefaultSequenceData'
 MRQ_JOB_UPPER = 200
-cam_param_dir = 'camera_params'
 data_asset_suffix = '_data'
 
 
@@ -122,6 +121,12 @@ class UnrealRenderLayerEnum(EnumBase):
     specular = 'specular'
     tangent = 'tangent'
     basecolor = 'basecolor'
+
+    vertices = 'vertices'
+    skeleton = 'skeleton'
+    actor_infos = 'actor_infos'
+    camera_params = 'camera_params'
+    audio = 'Audio'
 
 
 @dataclass
