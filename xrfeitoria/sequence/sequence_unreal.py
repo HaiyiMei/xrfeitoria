@@ -20,9 +20,8 @@ except ModuleNotFoundError:
     pass
 
 try:
-    from ..data_structure.models import RenderJobUnreal, RenderPass
+    from ..data_structure.models import RenderJobUnreal, RenderPass, TransformKeys
     from ..data_structure.models import SequenceTransformKey as SeqTransKey
-    from ..data_structure.models import TransformKeys
 except (ImportError, ModuleNotFoundError):
     pass
 
@@ -86,6 +85,7 @@ class SequenceUnreal(SequenceBase):
             )
             cam_param.dump(file.as_posix())  # replace the original file
 
+        # TODO:
         # 2. convert actor infos from `.dat` to `.json`
         # 3. convert vertices from `.dat` to `.npz`
         # 4. convert skeleton from `.dat` to `.json`
@@ -155,8 +155,6 @@ class SequenceUnreal(SequenceBase):
             file_name_format=file_name_format,
             console_variables=console_variables,
             anti_aliasing=anti_aliasing,
-            export_vertices=export_vertices,
-            export_skeleton=export_skeleton,
             export_audio=export_audio,
         )
 

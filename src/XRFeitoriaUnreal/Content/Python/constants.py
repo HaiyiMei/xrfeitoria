@@ -188,8 +188,6 @@ class RenderJobUnreal:
     file_name_format: str = '{sequence_name}/{render_pass}/{camera_name}/{frame_number}'
     console_variables: Dict[str, float] = field(default_factory=dict)
     anti_aliasing: AntiAliasSetting = AntiAliasSetting()
-    export_vertices: bool = False
-    export_skeleton: bool = False
     export_audio: bool = False
 
     def __post_init__(self):

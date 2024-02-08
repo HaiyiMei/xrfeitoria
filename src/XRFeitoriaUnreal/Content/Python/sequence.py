@@ -888,11 +888,13 @@ def get_actor_param(actor: unreal.Actor) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: A dictionary containing the actor parameters.
     """
+    stencil_value = get_actor_mesh_component(actor).get_editor_property('custom_depth_stencil_value')
     return {
         'location': actor.get_actor_location().to_tuple(),
         'rotation': actor.get_actor_rotation().to_tuple(),
         'scale': actor.get_actor_scale3d().to_tuple(),
-        'stencil_value': get_actor_mesh_component(actor).get_editor_property('custom_depth_stencil_value'),
+        'mask_color': utils_actor.get_mask_color(stencil_value=stencil_value),
+        'stencil_value': stencil_value,
     }
 
 
