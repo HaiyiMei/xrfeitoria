@@ -1353,7 +1353,7 @@ class Sequence:
         else:
             if frame_idx is None:
                 frame_idx = cls.START_FRAME
-            save_camera_param(frame_idx)
+            save_camera_param(frame_idx, save_root=save_dir)
             save_actor_param(frame_idx, save_dir, export_vertices, export_skeleton)
 
         return {

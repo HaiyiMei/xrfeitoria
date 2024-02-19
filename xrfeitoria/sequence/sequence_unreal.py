@@ -20,9 +20,8 @@ except ModuleNotFoundError:
     pass
 
 try:
-    from ..data_structure.models import RenderJobUnreal, RenderPass
+    from ..data_structure.models import RenderJobUnreal, RenderPass, TransformKeys
     from ..data_structure.models import SequenceTransformKey as SeqTransKey
-    from ..data_structure.models import TransformKeys
 except (ImportError, ModuleNotFoundError):
     pass
 
@@ -71,7 +70,7 @@ class SequenceUnreal(SequenceBase):
     ) -> None:
         from ..camera.camera_parameter import CameraParameter
 
-        for frame_idx in range(cls.get_playback()):
+        for frame_idx in range(*cls.get_playback()):
             _dir_ = cls._preprocess_in_engine(
                 save_dir=save_dir,
                 per_frame=False,
