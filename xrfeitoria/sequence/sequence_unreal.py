@@ -20,8 +20,9 @@ except ModuleNotFoundError:
     pass
 
 try:
-    from ..data_structure.models import RenderJobUnreal, RenderPass, TransformKeys
+    from ..data_structure.models import RenderJobUnreal, RenderPass
     from ..data_structure.models import SequenceTransformKey as SeqTransKey
+    from ..data_structure.models import TransformKeys
 except (ImportError, ModuleNotFoundError):
     pass
 
@@ -70,9 +71,14 @@ class SequenceUnreal(SequenceBase):
     ) -> None:
         from ..camera.camera_parameter import CameraParameter
 
-        _dir_ = cls._preprocess_in_engine(
-            save_dir=save_dir, export_vertices=export_vertices, export_skeleton=export_skeleton
-        )
+        for frame_idx in range(cls.get_playback()):
+            _dir_ = cls._preprocess_in_engine(
+                save_dir=save_dir,
+                per_frame=False,
+                export_vertices=export_vertices,
+                export_skeleton=export_skeleton,
+                frame_idx=frame_idx,
+            )
 
         # 1. convert camera parameters to xrprimer structure
         for file in Path(_dir_['camera_dir']).glob('*/*.json'):
@@ -309,6 +315,15 @@ class SequenceUnreal(SequenceBase):
         cls._set_playback_in_engine(start_frame=start_frame, end_frame=end_frame)
 
     @classmethod
+    def get_playback(cls) -> Tuple[int, int]:
+        """Get the playback range for the sequence.
+
+        Returns:
+            Tuple[int, int]: The start and end frame of the playback range.
+        """
+        return cls._get_playback_in_engine()
+
+    @classmethod
     def set_camera_cut_playback(cls, start_frame: Optional[int] = None, end_frame: Optional[int] = None) -> None:
         """Set the playback range for the sequence.
 
@@ -371,14 +386,29 @@ class SequenceUnreal(SequenceBase):
     @staticmethod
     def _preprocess_in_engine(
         save_dir: str,
+        per_frame: bool = False,
         export_vertices: bool = False,
         export_skeleton: bool = False,
+        frame_idx: 'Optional[int]' = None,
     ) -> 'dict_process_dir':
+        """Preprocesses the sequence in the Unreal Engine.
+
+        Args:
+            save_dir (str): The directory to save the processed sequence.
+            per_frame (bool, optional): Whether to process the sequence per frame. Defaults to False.
+            export_vertices (bool, optional): Whether to export the vertices. Defaults to False.
+            export_skeleton (bool, optional): Whether to export the skeleton. Defaults to False.
+            frame_idx (Optional[int], optional): The index of the frame to process. Defaults to None.
+
+        Returns:
+            dict_process_dir: The directory paths of the saved data.
+        """
         return XRFeitoriaUnrealFactory.Sequence.save_params(
             save_dir=save_dir,
-            per_frame=True,
+            per_frame=per_frame,
             export_vertices=export_vertices,
             export_skeleton=export_skeleton,
+            frame_idx=frame_idx,
         )
 
     @staticmethod
@@ -441,6 +471,10 @@ class SequenceUnreal(SequenceBase):
     @staticmethod
     def _set_playback_in_engine(start_frame: 'Optional[int]' = None, end_frame: 'Optional[int]' = None) -> None:
         XRFeitoriaUnrealFactory.Sequence.set_playback(start_frame=start_frame, end_frame=end_frame)
+
+    @staticmethod
+    def _get_playback_in_engine() -> 'Tuple[int, int]':
+        return XRFeitoriaUnrealFactory.Sequence.get_playback()
 
     @staticmethod
     def _set_camera_cut_player_in_engine(

@@ -1109,6 +1109,16 @@ class Sequence:
                 for section in master_track.get_sections():
                     section.set_end_frame(end_frame)
 
+    @classmethod
+    def get_playback(cls) -> Tuple[int, int]:
+        """Get the playback range of the sequence.
+
+        Returns:
+            Tuple[int, int]: The start frame and end frame of the playback range.
+        """
+        assert cls.sequence is not None, 'Sequence not initialized'
+        return cls.sequence.get_playback_start(), cls.sequence.get_playback_end()
+
     # ------ add actor and camera -------- #
 
     @classmethod
@@ -1231,7 +1241,20 @@ class Sequence:
         per_frame: bool = True,
         export_vertices: bool = False,
         export_skeleton: bool = False,
-    ):
+        frame_idx: Optional[int] = None,
+    ) -> Dict[str, str]:
+        """Save parameters of the sequence.
+
+        Args:
+            save_dir (PathLike): The directory to save the parameters.
+            per_frame (bool, optional): Whether to save parameters for each frame. Defaults to True.
+            export_vertices (bool, optional): Whether to export vertices of the mesh. Defaults to False.
+            export_skeleton (bool, optional): Whether to export skeleton of the skeletal mesh. Defaults to False.
+            frame_idx (int, optional): The frame index to save parameters for. Defaults to None. Will be used only if `per_frame` is False.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the paths of the saved parameters.
+        """
         assert cls.sequence is not None, 'Sequence not initialized'
         cls.show()
 
@@ -1328,8 +1351,10 @@ class Sequence:
                 save_camera_param(frame_idx, save_root=save_dir)
                 save_actor_param(frame_idx, save_dir, export_vertices, export_skeleton)
         else:
-            save_camera_param(cls.START_FRAME)
-            save_actor_param(cls.START_FRAME, save_dir, export_vertices, export_skeleton)
+            if frame_idx is None:
+                frame_idx = cls.START_FRAME
+            save_camera_param(frame_idx)
+            save_actor_param(frame_idx, save_dir, export_vertices, export_skeleton)
 
         return {
             'camera_dir': (save_dir / UnrealRenderLayerEnum.camera_params.value).as_posix(),
