@@ -1260,7 +1260,6 @@ class Sequence:
 
         save_dir = Path(save_dir)
         save_dir.mkdir(parents=True, exist_ok=True)
-        unreal.log(f'[XRFeitoria] saving parameters of sequence to {save_dir}')
 
         # get actors
         mesh_actors: Dict[str, unreal.Actor] = {}
