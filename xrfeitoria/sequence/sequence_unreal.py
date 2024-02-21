@@ -20,8 +20,9 @@ except ModuleNotFoundError:
     pass
 
 try:
-    from ..data_structure.models import RenderJobUnreal, RenderPass, TransformKeys
+    from ..data_structure.models import RenderJobUnreal, RenderPass
     from ..data_structure.models import SequenceTransformKey as SeqTransKey
+    from ..data_structure.models import TransformKeys
 except (ImportError, ModuleNotFoundError):
     pass
 
