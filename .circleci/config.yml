@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  win: circleci/windows@5.0
-
 jobs:
   build-plugins-windows:
     parameters:
@@ -12,9 +9,9 @@ jobs:
       unreal_executable:
         type: string
         default: "C:/UnrealEngine/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
-    executor:
-      name: win/default
-      shell: powershell.exe
+    machine:
+      image: 'windows-server-2022-gui:current'
+      docker_layer_caching: true
     working_directory: ~/project
     steps:
       - checkout
@@ -26,8 +23,6 @@ jobs:
           name: "Pull Docker Image"
           shell: powershell.exe
           command: docker pull << parameters.image >>
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run:
           name: "Build Plugins"
           shell: powershell.exe
@@ -61,6 +56,8 @@ jobs:
             echo "source $HOME/miniconda/bin/activate" >> $BASH_ENV
             source $BASH_ENV
             conda install -y python=3.10
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: "Build Plugins"
           command: |
