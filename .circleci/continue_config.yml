@@ -88,7 +88,7 @@ workflows:
           name: "Windows UE 5.1 - Build Plugins"
           image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
       - build-plugins-windows:
-          name: "Windows UE 5.1 - Build Plugins"
+          name: "Windows UE 5.2 - Build Plugins"
           image: "meihaiyi/ue4-source:5.2.1-ltsc2022-vs2022"
       - build-plugins-linux:
           name: "Linux UE 5.3 - Build Plugins"
