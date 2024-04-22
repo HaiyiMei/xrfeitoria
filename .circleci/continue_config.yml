@@ -33,10 +33,12 @@ jobs:
       - run:
           name: "Pull Docker Image"
           shell: powershell.exe
+          no_output_timeout: 60m
           command: docker pull << parameters.image >>
       - run:
           name: "Build Plugins"
           shell: powershell.exe
+          no_output_timeout: 60m
           command: |
             docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; C:/Python310/python.exe -m pip install .; C:/Python310/python.exe -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
       - store_artifacts:
