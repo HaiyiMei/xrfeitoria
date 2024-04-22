@@ -80,7 +80,7 @@ jobs:
 
 workflows:
   build-plugins-workflow: # Name of the workflow
-    when: << parameters.build-unreal-plugin >>
+    when: << pipeline.parameters.build-unreal-plugin >>
     jobs:
       - build-plugins-windows:
           name: "Windows UE 5.1 - Build Plugins"
