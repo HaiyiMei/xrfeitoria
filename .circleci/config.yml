@@ -1,87 +1,12 @@
 version: 2.1
-
+setup: true
 orbs:
-  win: circleci/windows@5.0
-
-jobs:
-  build-plugins-windows:
-    parameters:
-      image:
-        type: string
-        default: "meihaiyi/ue4-minimal:5.3.2-ltsc2022-vs2022-py310"
-      unreal_executable:
-        type: string
-        default: "C:/UnrealEngine/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
-    executor:
-      name: win/default
-      shell: powershell.exe
-    working_directory: ~/project
-    steps:
-      - checkout
-      - run:
-          name: "Check Docker Info"
-          shell: powershell.exe
-          command: docker info
-      - run:
-          name: "Pull Docker Image"
-          shell: powershell.exe
-          command: docker pull << parameters.image >>
-      - run:
-          name: "Build Plugins"
-          shell: powershell.exe
-          command: |
-            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; python -m pip install .; python -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
-      - store_artifacts:
-          path: src/dist/
-          destination: Plugins
-
-  build-plugins-linux:
-    parameters:
-      image:
-        type: string
-        default: "ghcr.io/epicgames/unreal-engine:dev-5.3"
-      unreal_executable:
-        type: string
-        default: "/home/ue4/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Cmd"
-    docker:
-      - image: << parameters.image >>
-        auth:
-          username: $GHCR_USERNAME
-          password: $GHCR_TOKEN
-    working_directory: ~/project
-    steps:
-      - checkout
-      - run:
-          name: Install Miniconda and Python 3.10
-          command: |
-            curl -sLo Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-            bash Miniconda.sh -b -p $HOME/miniconda
-            echo "source $HOME/miniconda/bin/activate" >> $BASH_ENV
-            source $BASH_ENV
-            conda install -y python=3.10
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: "Build Plugins"
-          command: |
-            python -m pip install .
-            python -m xrfeitoria.utils.publish_plugins -u "/home/ue4/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Cmd"
-      - store_artifacts:
-          path: src/dist/
-          destination: Plugins
+  path-filtering: circleci/path-filtering@1.0.0
 
 workflows:
-  build-plugins-workflow: # Name of the workflow
+  generate-config: # Name of the workflow
     jobs:
-      - build-plugins-windows:
-          name: "Windows UE 5.3 - Build Plugins"
-          image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
-      - build-plugins-linux:
-          name: "Linux UE 5.3 - Build Plugins"
-          image: "ghcr.io/epicgames/unreal-engine:dev-5.3"
-      - build-plugins-linux:
-          name: "Linux UE 5.2 - Build Plugins"
-          image: "ghcr.io/epicgames/unreal-engine:dev-5.2"
-      - build-plugins-linux:
-          name: "Linux UE 5.1 - Build Plugins"
-          image: "ghcr.io/epicgames/unreal-engine:dev-5.1"
+      - path-filtering/filter:
+          base-revision: main
+          mapping: |
+            src/XRFeitoriaUnreal/.* build-code true .circleci/config_build_unreal_plugins.yml
