@@ -177,9 +177,7 @@ if __name__ == '__main__':
             '-u',
             '--unreal-exec',
             resolve_path=True,
-            file_okay=True,
-            dir_okay=False,
-            exists=True,
+            exists=False,
             help='Path to Unreal Engine executable. e.g. "C:/Program Files/Epic Games/UE_5.1/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"',
         ),
     ):
