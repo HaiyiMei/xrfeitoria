@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@5.0
+
 jobs:
   build-plugins-windows:
     parameters:
@@ -9,11 +12,9 @@ jobs:
       unreal_executable:
         type: string
         default: "C:/UnrealEngine/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
-    machine:
-      image: 'windows-server-2022-gui:current'
-      resource_class: windows.medium
-      shell: powershell.exe -ExecutionPolicy Bypass
-      docker_layer_caching: true
+    executor:
+      name: win/default
+      shell: powershell.exe
     working_directory: ~/project
     steps:
       - checkout
