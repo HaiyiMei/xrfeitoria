@@ -38,7 +38,7 @@ jobs:
           name: "Build Plugins"
           shell: powershell.exe
           command: |
-            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; python -m pip install .; python -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
+            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; C:/Python310/python.exe -m pip install .; C:/Python310/python.exe -m xrfeitoria.utils.publish_plugins << parameters.unreal_executable >>"
       - store_artifacts:
           path: src/dist/
           destination: Plugins
