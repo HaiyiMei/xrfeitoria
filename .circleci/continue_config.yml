@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  win: circleci/windows@5.0
-
 parameters:
   build-unreal-plugin:
     type: boolean
@@ -12,35 +9,32 @@ parameters:
     default: true
 
 jobs:
+  runner-test:
+    machine: true
+    resource_class: haiyimei/windows-server
+    steps:
+      - run:
+          name: "Check Runner Info"
+          shell: powershell.exe
+          command: echo "Hi I'm on Runners!"
+
   build-plugins-windows:
-    parameters:
-      image:
-        type: string
-        default: "meihaiyi/ue4-minimal:5.3.2-ltsc2022-vs2022-py310"
-      unreal_executable:
-        type: string
-        default: "C:/UnrealEngine/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
-    executor:
-      name: win/default
-      shell: powershell.exe
-    working_directory: ~/project
+    machine: true
+    resource_class: haiyimei/windows-server
+    working_directory: $HOME/project
     steps:
       - checkout
-      - run:
-          name: "Check Docker Info"
-          shell: powershell.exe
-          command: docker info
-      - run:
-          name: "Pull Docker Image"
-          shell: powershell.exe
-          no_output_timeout: 60m
-          command: docker pull << parameters.image >>
       - run:
           name: "Build Plugins"
           shell: powershell.exe
           no_output_timeout: 60m
           command: |
-            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; C:/Python310/python.exe -m pip install .; C:/Python310/python.exe -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
+            conda activate xrfeitoria
+            python -m pip install .
+            python -m xrfeitoria.utils.publish_plugins `
+              -u "C:/Program Files/Epic Games/UE_5.1/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" `
+              -u "C:/Program Files/Epic Games/UE_5.2/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" `
+              -u "C:/Program Files/Epic Games/UE_5.3/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
       - store_artifacts:
           path: src/dist/
           destination: Plugins
@@ -84,12 +78,11 @@ workflows:
   build-plugins-workflow: # Name of the workflow
     when: << pipeline.parameters.build-unreal-plugin >>
     jobs:
+      - runner-test
       - build-plugins-windows:
-          name: "Windows UE 5.1 - Build Plugins"
-          image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
-      - build-plugins-windows:
-          name: "Windows UE 5.2 - Build Plugins"
-          image: "meihaiyi/ue4-source:5.2.1-ltsc2022-vs2022"
+          name: "Windows UE - Build Plugins"
+          requires:
+            - runner-test
       - build-plugins-linux:
           name: "Linux UE 5.3 - Build Plugins"
           image: "ghcr.io/epicgames/unreal-engine:dev-5.3"
