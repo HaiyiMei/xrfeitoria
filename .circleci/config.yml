@@ -4,10 +4,10 @@ orbs:
   path-filtering: circleci/path-filtering@1.0.0
 
 workflows:
-  generate-config: # Name of the workflow
+  generate-config:
     jobs:
       - path-filtering/filter:
           base-revision: main
-          config-path: .circleci/config_build_unreal_plugins.yml
+          config-path: .circleci/continue_config.yml
           mapping: |
             src/XRFeitoriaUnreal/.* build-unreal-plugin true

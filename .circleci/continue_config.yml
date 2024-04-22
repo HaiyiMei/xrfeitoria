@@ -3,6 +3,14 @@ version: 2.1
 orbs:
   win: circleci/windows@5.0
 
+parameters:
+  build-unreal-plugin:
+    type: boolean
+    default: false
+  run-test:
+    type: boolean
+    default: true
+
 jobs:
   build-plugins-windows:
     parameters:
@@ -72,9 +80,10 @@ jobs:
 
 workflows:
   build-plugins-workflow: # Name of the workflow
+    when: << parameters.build-unreal-plugin >>
     jobs:
       - build-plugins-windows:
-          name: "Windows UE 5.3 - Build Plugins"
+          name: "Windows UE 5.1 - Build Plugins"
           image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
       - build-plugins-linux:
           name: "Linux UE 5.3 - Build Plugins"
