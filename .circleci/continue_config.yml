@@ -38,7 +38,7 @@ jobs:
           name: "Build Plugins"
           shell: powershell.exe
           command: |
-            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; C:/Python310/python.exe -m pip install .; C:/Python310/python.exe -m xrfeitoria.utils.publish_plugins << parameters.unreal_executable >>"
+            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; C:/Python310/python.exe -m pip install .; C:/Python310/python.exe -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
       - store_artifacts:
           path: src/dist/
           destination: Plugins
@@ -85,6 +85,9 @@ workflows:
       - build-plugins-windows:
           name: "Windows UE 5.1 - Build Plugins"
           image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
+      - build-plugins-windows:
+          name: "Windows UE 5.1 - Build Plugins"
+          image: "meihaiyi/ue4-source:5.2.1-ltsc2022-vs2022"
       - build-plugins-linux:
           name: "Linux UE 5.3 - Build Plugins"
           image: "ghcr.io/epicgames/unreal-engine:dev-5.3"
