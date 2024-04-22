@@ -15,13 +15,19 @@ jobs:
     executor:
       name: win/default
       shell: powershell.exe
-    working_directory: $HOME/project
+    working_directory: ~/project
     steps:
       - checkout
       - run:
           name: "Check Docker Info"
           shell: powershell.exe
           command: docker info
+      - run:
+          name: "Pull Docker Image"
+          shell: powershell.exe
+          command: docker pull << parameters.image >>
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: "Build Plugins"
           shell: powershell.exe
