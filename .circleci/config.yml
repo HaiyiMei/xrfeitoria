@@ -1,15 +1,9 @@
 version: 2.1
 
-jobs:
-  runner-test:
-    machine: true
-    resource_class: haiyimei/windows-server
-    steps:
-      - run:
-          name: "Check Runner Info"
-          shell: powershell.exe
-          command: echo "Hi I'm on Runners!"
+orbs:
+  win: circleci/windows@5.0
 
+jobs:
   build-plugins-windows:
     parameters:
       image:
@@ -18,8 +12,9 @@ jobs:
       unreal_executable:
         type: string
         default: "C:/UnrealEngine/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
-    machine: true
-    resource_class: haiyimei/windows-server
+    executor:
+      name: win/default
+      shell: powershell.exe
     working_directory: $HOME/project
     steps:
       - checkout
@@ -31,7 +26,7 @@ jobs:
           name: "Build Plugins"
           shell: powershell.exe
           command: |
-            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "python -m pip install .; python -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
+            docker run -v $HOME/project:C:/project -w C:/project --entrypoint powershell << parameters.image >> "choco install python310 -y --allow-downgrade; python -m pip install .; python -m xrfeitoria.utils.publish_plugins -u << parameters.unreal_executable >>"
       - store_artifacts:
           path: src/dist/
           destination: Plugins
@@ -75,7 +70,7 @@ workflows:
       - runner-test
       - build-plugins-windows:
           name: "Windows UE 5.3 - Build Plugins"
-          image: "meihaiyi/ue4-minimal:5.3.2-ltsc2022-vs2022-py310"
+          image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
           requires:
             - runner-test
       - build-plugins-linux:
