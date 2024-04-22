@@ -70,8 +70,6 @@ workflows:
       - build-plugins-windows:
           name: "Windows UE 5.3 - Build Plugins"
           image: "meihaiyi/ue4-source:5.1.1-ltsc2022-vs2022"
-          requires:
-            - runner-test
       - build-plugins-linux:
           name: "Linux UE 5.3 - Build Plugins"
           image: "ghcr.io/epicgames/unreal-engine:dev-5.3"
