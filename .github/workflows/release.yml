@@ -53,6 +53,7 @@ jobs:
           # Checkout to PR branch
           git checkout ${{ github.head_ref }}
           git tag -a "$VERSION" -m "Release $VERSION"
+          pip install .
 
       - name: Update Blender Addon Version
         if: "!contains(github.event.pull_request.changed_files, 'src/XRFeitoriaBlender/*')"
