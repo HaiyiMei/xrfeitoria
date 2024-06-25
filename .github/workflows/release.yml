@@ -67,5 +67,5 @@ jobs:
         run: |
           python -m xrfeitoria.utils.publish_plugins update-plugin-info
           git add .
-          git commit -m "Update version to $VERSION"
+          git commit -m "Update Plugin Version"
           git push origin ${{ github.head_ref }}
