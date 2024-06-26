@@ -191,13 +191,13 @@ jobs:
       - run:
           name: "Get GitHub Release CLI"
           command: |
-            # https://github.com/tcnksm
+            # https://github.com/tcnksm/ghr
             GHR_VERSION="v0.16.2"
-            GHR_URL="https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz"
+            GHR_URL="https://github.com/tcnksm/ghr/releases/download/${GHR_VERSION}/ghr_${GHR_VERSION}_linux_amd64.tar.gz"
             wget "$GHR_URL" && \
-              tar xzf ghr_v${GHR_VERSION}_linux_amd64.tar.gz && \
-              mv ghr_v${GHR_VERSION}_linux_amd64/ghr /usr/bin/ghr && \
-              rm -r ghr_v${GHR_VERSION}_linux_amd64.tar.gz ghr_v${GHR_VERSION}_linux_amd64/
+              tar xzf ghr_${GHR_VERSION}_linux_amd64.tar.gz && \
+              mv ghr_${GHR_VERSION}_linux_amd64/ghr /usr/bin/ghr && \
+              rm -r ghr_${GHR_VERSION}_linux_amd64.tar.gz ghr_${GHR_VERSION}_linux_amd64/
       - run:
           name: "Publish Release on GitHub"
           command: |
