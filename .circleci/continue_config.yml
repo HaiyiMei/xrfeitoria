@@ -203,7 +203,11 @@ jobs:
           command: |
             VERSION=$(git describe --tags --abbrev=0)
             RELEASE_TITLE="XRFeitoria Release $VERSION"
-            DIST_PATH="./artifacts/src/dist/" if [ -d "./artifacts/src/dist" ] else ""
+            if [ -d "./artifacts/src/dist" ]; then
+              DIST_PATH="./artifacts/src/dist/"
+            else
+              DIST_PATH=""
+            fi
             ghr \
               -t ${GITHUB_TOKEN} \
               -u ${CIRCLE_PROJECT_USERNAME} \
