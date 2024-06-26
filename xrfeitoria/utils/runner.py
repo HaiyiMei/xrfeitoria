@@ -639,7 +639,7 @@ class BlenderRPCRunner(RPCRunner):
                 plugin_path = Path(self.plugin_url)
             if plugin_path != src_plugin_path:
                 src_plugin_path.parent.mkdir(exist_ok=True, parents=True)
-                shutil.move(plugin_path, src_plugin_path)
+                shutil.copyfile(plugin_path, src_plugin_path)
         return src_plugin_path
 
     @staticmethod
