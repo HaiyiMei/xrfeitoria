@@ -145,13 +145,14 @@ jobs:
                   apt-get update
                   apt-get install -y git
             - run:
-                name: Install Miniconda and Python 3.10
+                name: Install Miniconda, Python 3.10, and XRFeitoria
                 command: |
                   curl -sLo Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
                   bash Miniconda.sh -b -p $HOME/miniconda
                   echo "source $HOME/miniconda/bin/activate" >> $BASH_ENV
                   source $BASH_ENV
                   conda install -y python=3.10
+                  python -m pip install .
             - run:
                 name: "Build Blender Addon & Run Tests"
                 environment:
@@ -159,7 +160,6 @@ jobs:
                   RUN_TEST: << pipeline.parameters.run-blender-test >>
                   PYTHONIOENCODING: "utf-8"
                 command: |
-                  python -m pip install .
                   if [ "$BUILD_BLENDER_ADDON" = "1" ]; then
                     echo "#### Building Blender Addon ####"
                     python -m xrfeitoria.utils.publish_plugins build-blender
@@ -203,6 +203,7 @@ jobs:
           command: |
             VERSION=$(git describe --tags --abbrev=0)
             RELEASE_TITLE="XRFeitoria Release $VERSION"
+            DIST_PATH="./artifacts/src/dist/" if [ -d "./artifacts/src/dist" ] else ""
             ghr \
               -t ${GITHUB_TOKEN} \
               -u ${CIRCLE_PROJECT_USERNAME} \
@@ -212,7 +213,7 @@ jobs:
               -draft \
               -generatenotes \
               -delete \
-              ${VERSION} ./artifacts/src/dist/
+              ${VERSION} ${DIST_PATH}
 
 workflows:
   plugin-workflow:
