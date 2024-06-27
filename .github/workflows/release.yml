@@ -21,17 +21,9 @@ jobs:
 
       - run: |
           echo "1234321" >> README.md
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git commit -m "Update README.md"
 
-      # - uses: reviewdog/action-suggester@v1
-
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            Hello world ! :wave:
-
-      - uses: googleapis/code-suggester@v2 # takes the changes from git directory
-        with:
-          command: review
-          pull_number: ${{ github.event.pull_request.number }}
-          git_dir: '.'
+      - uses: reviewdog/action-suggester@v1
