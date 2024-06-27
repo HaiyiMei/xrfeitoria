@@ -17,10 +17,6 @@ jobs:
 
       - run: |
           echo "1234321" >> README.md
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add README.md
-          git commit -m "Update README.md"
 
       - name: 'suggester / JSON & C++'
         uses: reviewdog/action-suggester@v1
