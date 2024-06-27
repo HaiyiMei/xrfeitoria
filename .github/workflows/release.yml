@@ -30,6 +30,16 @@ jobs:
           message: |
             Hello world ! :wave:
 
-      - uses: getsentry/action-git-diff-suggestions@main
+      - uses: googleapis/code-suggester@v2 # takes the changes from git directory
         with:
-          message: 'eslint made the following change'
+          command: pr
+          upstream_owner: HaiyiMei
+          upstream_repo: XRFeitoria
+          description: 'This pull request is adding a LICENSE file'
+          title: 'chore(license): add license file'
+          message: 'chore(license): add license file'
+          branch: my-branch
+          git_dir: '.'
+          labels: |
+            bug
+            priority: p1
