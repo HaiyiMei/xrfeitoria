@@ -15,78 +15,9 @@ permissions:
 
 jobs:
   release:
-    if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      # Bump version on merging Pull Requests with specific labels.
-      # (bump:major,bump:minor,bump:patch)
-      - id: bumpr
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        uses: haya14busa/action-bumpr@v1
-
-      # Get tag name.
-      - id: tag
-        uses: haya14busa/action-cond@v1
-        with:
-          cond: "${{ startsWith(github.ref, 'refs/tags/') }}"
-          if_true: ${{ github.ref }}
-          if_false: ${{ steps.bumpr.outputs.next_version }}
-
-  release-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - id: bumpr
-        name: Post bumpr status comment
-        uses: haya14busa/action-bumpr@v1
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.8
-
-      - id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            blender:
-              - 'src/XRFeitoriaBpy/*'
-            unreal:
-              - 'src/XRFeitoriaUnreal/*'
-
-      - name: Determine next version
-        run: |
-          # Get the next version from the previous step
-          VERSION="${{ steps.bumpr.outputs.next_version }}"
-          if [ -z "$VERSION" ]; then
-            echo "No version bump needed."
-            exit 0
-          fi
-
-          # Git configuration
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$VERSION" -m "Release $VERSION"
-          pip install .
-
-          # Update plugin info
-          if ${{ steps.filter.outputs.blender == 'true' }}; then
-            python -m xrfeitoria.utils.publish_plugins update-bpy-version
-          fi
-
-          if ${{ steps.filter.outputs.unreal == 'true' }}; then
-            python -m xrfeitoria.utils.publish_plugins update-uplugin-version
-          fi
-
-          python -m xrfeitoria.utils.publish_plugins update-plugin-info
-        
-      - name: suggester /Leave comments on PRs
-        uses: reviewdog/action-setup@v1
+      - uses: reviewdog/action-setup@v1
 
       - env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -128,3 +59,10 @@ jobs:
             -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
             -level="${INPUT_LEVEL}" \
             -diff="git diff"
+
+      - uses: reviewdog/action-actionlint@v1
+        with:
+          actionlint_flags: -ignore 'SC2086' -ignore 'SC2129'
+          fail_on_error: false
+          level: error
+          reporter: github-pr-review
