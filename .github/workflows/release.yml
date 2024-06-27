@@ -64,7 +64,3 @@ jobs:
           fail_on_error: false
           level: error
           reporter: github-pr-review
-      
-
-      - name: Create Release
-        run: reviewdog -diff="git diff origin/master" -fail-on-error=true -name="reviewdog-suggester" -reporter=github-pr-check -level=warning
