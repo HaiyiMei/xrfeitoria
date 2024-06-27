@@ -14,57 +14,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: reviewdog/action-setup@v1
-        with:
-            reviewdog_version: latest
 
-      - env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+      # - uses: reviewdog/action-setup@v1
+      #   with:
+      #       reviewdog_version: latest
+
+      - run: |
           echo "1234321" >> README.md
-          echo "Suggester is running"
-          echo "CI_REPO_NAME: $CI_REPO_NAME"
-          echo "CI_REPO_OWNER: $CI_REPO_OWNER"
-          echo "CI_COMMIT: $CI_COMMIT"
 
-          TMPFILE=$(mktemp)
-          git diff >"${TMPFILE}"
-
-          export INPUT_TOOL_NAME=reviewdog-suggester
-          export INPUT_LEVEL=warning
-          export INPUT_FILTER_MODE=diff_context
-          export INPUT_FAIL_ON_ERROR=false
-          export INPUT_REVIEWDOG_FLAGS=true
-          export INPUT_CLEANUP=true
-
-          # shellcheck disable=SC2086
-          reviewdog \
-            -name="${INPUT_TOOL_NAME:-reviewdog-suggester}" \
-            -f=diff \
-            -f.diff.strip=1 \
-            -reporter="github-pr-review" \
-            -filter-mode="${INPUT_FILTER_MODE}" \
-            -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
-            -level="${INPUT_LEVEL}" \
-            ${INPUT_REVIEWDOG_FLAGS} <"${TMPFILE}"
-
-          reviewdog \
-            -name="${INPUT_TOOL_NAME:-reviewdog-suggester}" \
-            -f=diff \
-            -f.diff.strip=1 \
-            -reporter="github-pr-review" \
-            -filter-mode="${INPUT_FILTER_MODE}" \
-            -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
-            -level="${INPUT_LEVEL}" \
-            -diff="git diff FETCH_HEAD"
-
-
-      - uses: reviewdog/action-actionlint@v1
-        with:
-          actionlint_flags: -ignore 'SC2086' -ignore 'SC2129'
-          fail_on_error: false
-          level: error
-          reporter: github-pr-review
+      - uses: reviewdog/action-suggester@v1
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
