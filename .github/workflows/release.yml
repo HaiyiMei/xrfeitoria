@@ -65,3 +65,9 @@ jobs:
           fail_on_error: false
           level: error
           reporter: github-pr-review
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Hello world ! :wave:
