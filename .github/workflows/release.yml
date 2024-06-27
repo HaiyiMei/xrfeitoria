@@ -89,7 +89,7 @@ jobs:
 
           # Commit changes
           git add .
-          git commit -a -m "Release $VERSION"
+          git commit -m "[bot] Update plugin info"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
