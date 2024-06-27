@@ -85,10 +85,29 @@ jobs:
 
           python -m xrfeitoria.utils.publish_plugins update-plugin-info
         
-      - name: tmp
+      - name: suggester /Leave comments on PRs
+        uses: reviewdog/action-setup@v1
+
+      - env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Suggester is running"
+          echo "CI_REPO_NAME: $CI_REPO_NAME"
+          echo "CI_REPO_OWNER: $CI_REPO_OWNER"
           echo "CI_COMMIT: $CI_COMMIT"
 
-      - name: suggester /Leave comments on PRs
-        uses: reviewdog/action-suggester@v1
+          TMPFILE=$(mktemp)
+          git diff >"${TMPFILE}"
+          git stash -u
+
+          # shellcheck disable=SC2086
+          reviewdog \
+            -name="${INPUT_TOOL_NAME:-reviewdog-suggester}" \
+            -f=diff \
+            -f.diff.strip=1 \
+            -reporter="github-pr-review" \
+            -filter-mode="${INPUT_FILTER_MODE}" \
+            -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
+            -level="${INPUT_LEVEL}" \
+            ${INPUT_REVIEWDOG_FLAGS} <"${TMPFILE}"
+
