@@ -87,5 +87,8 @@ jobs:
 
           python -m xrfeitoria.utils.publish_plugins update-plugin-info
 
-      - name: suggester / Leave comments on PRs
-        uses: reviewdog/action-suggester@v1
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+
+      # - name: suggester / Leave comments on PRs
+      #   uses: reviewdog/action-suggester@v1
