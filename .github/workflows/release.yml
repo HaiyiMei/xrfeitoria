@@ -32,14 +32,6 @@ jobs:
 
       - uses: googleapis/code-suggester@v2 # takes the changes from git directory
         with:
-          command: pr
-          upstream_owner: HaiyiMei
-          upstream_repo: XRFeitoria
-          description: 'This pull request is adding a LICENSE file'
-          title: 'chore(license): add license file'
-          message: 'chore(license): add license file'
-          branch: my-branch
+          command: review
+          pull_number: ${{ github.event.pull_request.number }}
           git_dir: '.'
-          labels: |
-            bug
-            priority: p1
