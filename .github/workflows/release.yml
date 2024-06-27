@@ -91,6 +91,7 @@ jobs:
       - env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "1234321" >> README.md
           echo "Suggester is running"
           echo "CI_REPO_NAME: $CI_REPO_NAME"
           echo "CI_REPO_OWNER: $CI_REPO_OWNER"
@@ -99,6 +100,13 @@ jobs:
           TMPFILE=$(mktemp)
           git diff >"${TMPFILE}"
           git stash -u
+
+          export INPUT_TOOL_NAME=reviewdog-suggester
+          export INPUT_LEVEL=warning
+          export INPUT_FILTER_MODE=diff_context
+          export INPUT_FAIL_ON_ERROR=false
+          export INPUT_REVIEWDOG_FLAGS=true
+          export INPUT_CLEANUP=true
 
           # shellcheck disable=SC2086
           reviewdog \
@@ -111,3 +119,12 @@ jobs:
             -level="${INPUT_LEVEL}" \
             ${INPUT_REVIEWDOG_FLAGS} <"${TMPFILE}"
 
+          reviewdog \
+            -name="${INPUT_TOOL_NAME:-reviewdog-suggester}" \
+            -f=diff \
+            -f.diff.strip=1 \
+            -reporter="github-pr-review" \
+            -filter-mode="${INPUT_FILTER_MODE}" \
+            -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
+            -level="${INPUT_LEVEL}" \
+            -diff="git diff"
