@@ -87,6 +87,9 @@ jobs:
 
           python -m xrfeitoria.utils.publish_plugins update-plugin-info
 
+          git add .
+          git commit -a -m "Release $VERSION"
+
       - name: Push changes
         uses: ad-m/github-push-action@master
 
