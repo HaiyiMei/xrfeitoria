@@ -29,7 +29,6 @@ jobs:
 
           TMPFILE=$(mktemp)
           git diff >"${TMPFILE}"
-          git stash -u
 
           export INPUT_TOOL_NAME=reviewdog-suggester
           export INPUT_LEVEL=warning
