@@ -1,15 +1,12 @@
 name: release
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*.*.*'
   pull_request:
+  pull_request_target:
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request_target' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,4 +23,5 @@ jobs:
           git add README.md
           git commit -m "Update README.md"
 
-      - uses: reviewdog/action-suggester@v1
+      - name: 'suggester / JSON & C++'
+        uses: reviewdog/action-suggester@v1
