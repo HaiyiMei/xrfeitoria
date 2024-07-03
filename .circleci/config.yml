@@ -1,16 +1,11 @@
 version: 2.1
-
+workflows:
+  testing:
+    jobs:
+      - runner-test
 jobs:
-  test-self-host:
+  runner-test:
     machine: true
     resource_class: openxrlab/xrfeitoria
     steps:
-      - run:
-          name: "Check Runner Info"
-          shell: powershell.exe
-          command: echo "Hi I'm on Runners!"
-
-workflows:
-  test-workflow:
-    jobs:
-      - test-self-host
+      - run: echo "Hi I'm on Runners!"
