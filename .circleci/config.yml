@@ -6,7 +6,6 @@ workflows:
 jobs:
   runner-test:
     machine: true
-    # resource_class: openxrlab/xrfeitoria
-    resource_class: haiyimei/windows-machines
+    resource_class: openxrlab/xrfeitoria
     steps:
       - run: echo "Hi I'm on Runners!"
